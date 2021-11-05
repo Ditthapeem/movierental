@@ -1,10 +1,11 @@
 import re
 import unittest 
 from customer import Customer
-from rental import Rental
-from movie import Movie, PriceCode
+from rental import Rental, PriceCode
+from movie import Movie
 
-class CustomerTest(unittest.TestCase): 
+
+class CustomerTest(unittest.TestCase):
 	""" Tests of the Customer class"""
 	
 	def setUp(self):
