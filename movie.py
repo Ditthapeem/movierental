@@ -34,6 +34,7 @@ class MovieCatalog:
 			new_movie = file.readline().strip("\n").split(",")
 			movie_data = {'id': new_movie[0], 'title': new_movie[1], 'year': new_movie[2], 'genre': new_movie[3]}
 			self.movie_data.append(movie_data)
+		file.close()
 
 	def get_movie(self, title):
 		# Search for title
@@ -44,7 +45,7 @@ class MovieCatalog:
 		for id in self.movie_data:
 			new_id = id['id']
 		self.movie_data.append({'id': int(new_id)+1, 'title': title, 'year': "Unknown", 'genre': "Unknown"})
-		return Movie(title, "Unknown", "Unknown")
+		return Movie(title, "Unknown", "Unknown", )
 
 # 	def debug(self):
 # 		return self.movie_data

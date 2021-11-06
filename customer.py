@@ -40,7 +40,7 @@ class Customer:
             #  add detail line to statement
             statement += fmt.format(rental.get_movie().get_title(), rental.get_days_rented(), Rental.get_charge(rental))
             # and accumulate activity
-            total_amount += rental.movie.price_code.price(rental.get_days_rented())
+            total_amount += rental.price_code.price(rental.get_days_rented())
 
         # footer: summary of charges
         statement += "\n"
@@ -54,8 +54,8 @@ class Customer:
 if __name__ == "__main__":
     customer = Customer("Edward Snowden")
     print(customer.statement())
-    movie = Movie("Hacker Noon", PriceCode.regular)
-    customer.add_rental(Rental(movie, 2))
-    movie = Movie("CitizenFour", PriceCode.new_release)
-    customer.add_rental(Rental(movie, 3))
+    movie = Movie("Hacker Noon", 2001, "Hacker")
+    customer.add_rental(Rental(movie, 2, PriceCode.for_movie(movie)))
+    movie = Movie("CitizenFour", 2001, "Drama")
+    customer.add_rental(Rental(movie, 3, PriceCode.for_movie(movie)))
     print(customer.statement())

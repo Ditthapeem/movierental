@@ -1,6 +1,6 @@
 import logging
 from enum import Enum
-
+from datetime import datetime
 
 class Rental:
 	"""
@@ -14,12 +14,18 @@ class Rental:
 	field is used.
 	"""
 	
-	def __init__(self, movie, days_rented): 
+	def __init__(self, movie, days_rented, price_code):
 		"""Initialize a new movie rental object for
 		   a movie with known rental period (daysRented).
 		"""
+		if not isinstance(price_code, PriceCode):
+			raise f"Movie {self.get_movie()} has unrecognized priceCode"
 		self.movie = movie
 		self.days_rented = days_rented
+		self.price_code = price_code
+
+	def get_price_code(self):
+		return self.price_code
 
 	def get_movie(self):
 		return self.movie
@@ -28,29 +34,30 @@ class Rental:
 		return self.days_rented
 
 	def get_charge(self):
-		amount = 0
-		if self.get_movie().get_price_code() == PriceCode.regular:
-			# Two days for $2, additional days 1.50 each.
-			amount = 2.0
-			if self.get_days_rented() > 2:
-				amount += 1.5 * (self.get_days_rented() - 2)
-		elif self.get_movie().get_price_code() == PriceCode.childrens:
-			# Three days for $1.50, additional days 1.50 each.
-			amount = 1.5
-			if self.get_days_rented() > 3:
-				amount += 1.5 * (self.get_days_rented() - 3)
-		elif self.get_movie().get_price_code() == PriceCode.new_release:
-			# Straight per day charge
-			amount = 3 * self.get_days_rented()
-		else:
-			log = logging.getLogger()
-			log.error(f"Movie {self.get_movie()} has unrecognized priceCode {self.get_movie().get_price_code()}")
-		return amount
+		return self.price_code.price(self.days_rented)
+		# amount = 0
+		# if self.get_movie().get_price_code() == PriceCode.regular:
+		# 	# Two days for $2, additional days 1.50 each.
+		# 	amount = 2.0
+		# 	if self.get_days_rented() > 2:
+		# 		amount += 1.5 * (self.get_days_rented() - 2)
+		# elif self.get_movie().get_price_code() == PriceCode.childrens:
+		# 	# Three days for $1.50, additional days 1.50 each.
+		# 	amount = 1.5
+		# 	if self.get_days_rented() > 3:
+		# 		amount += 1.5 * (self.get_days_rented() - 3)
+		# elif self.get_movie().get_price_code() == PriceCode.new_release:
+		# 	# Straight per day charge
+		# 	amount = 3 * self.get_days_rented()
+		# else:
+		# 	log = logging.getLogger()
+		# 	log.error(f"Movie {self.get_movie()} has unrecognized priceCode {self.get_movie().get_price_code()}")
+		# return amount
 
 	def get_renter_point(self):
 		# award renter points
 		renter_point = 0
-		if self.get_movie().get_price_code() == PriceCode.new_release:
+		if self.get_price_code() == PriceCode.new_release:
 			renter_point += self.get_days_rented()
 		else:
 			renter_point += 1
@@ -77,3 +84,11 @@ class PriceCode(Enum):
 		"""Returns the rental price for a given number of days."""
 		points = self.value["frp"]
 		return points(days)
+
+	def for_movie(movie):
+		if datetime.today().year == movie.year:
+			return PriceCode.new_release
+		elif movie.is_genre("Children"):
+			return PriceCode.childrens
+		else:
+			return PriceCode.regular
